@@ -18,12 +18,13 @@
 
 import Cocoa
 
-private extension NSToolbarItem.Identifier {
+extension NSToolbarItem.Identifier {
 
   static let doughnutRefresh     = Self("NSToolbarDoughnutRefreshItemIdentifier")
   static let doughnutNewPodcast  = Self("NSToolbarDoughnutNewPodcastItemIdentifier")
   static let doughnutFilter      = Self("NSToolbarDoughnutFilterItemIdentifier")
   static let doughnutPlayerView  = Self("NSToolbarDoughnutPlayerViewItemIdentifier")
+  static let doughnutAirPlay     = Self("NSToolbarDoughnutAirPlayItemIdentifier")
   static let doughnutTaskManager = Self("NSToolbarDoughnutTaskManagerItemIdentifier")
   static let doughnutSearch      = Self("NSToolbarDoughnutSearchItemIdentifier")
 
@@ -53,6 +54,7 @@ extension WindowController: NSToolbarDelegate {
         .flexibleSpace,
         .doughnutFilter,
         .doughnutPlayerView,
+        .doughnutAirPlay,
         .doughnutTaskManager,
         .flexibleSpace,
         .doughnutSearch,
@@ -63,6 +65,7 @@ extension WindowController: NSToolbarDelegate {
         .doughnutNewPodcast,
         .flexibleSpace,
         .doughnutPlayerView,
+        .doughnutAirPlay,
         .doughnutTaskManager,
         .flexibleSpace,
         .doughnutSearch,
@@ -85,6 +88,17 @@ extension WindowController: NSToolbarDelegate {
     if Self.itemsToHideMenu.contains(item.itemIdentifier) {
       item.menuFormRepresentation = nil
     }
+  }
+
+  func toolbar(
+    _ toolbar: NSToolbar,
+    itemForItemIdentifier itemIdentifier: NSToolbarItem.Identifier,
+    willBeInsertedIntoToolbar flag: Bool
+  ) -> NSToolbarItem? {
+    if itemIdentifier == .doughnutAirPlay {
+      return AudioRouteToolBarItem()
+    }
+    return nil
   }
 
 }
