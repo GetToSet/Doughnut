@@ -37,7 +37,6 @@ extension WindowController: NSToolbarDelegate {
   ]
 
   private static let itemsToHideMenu: [NSToolbarItem.Identifier] = [
-    .doughnutTaskManager,
     .doughnutPlayerView,
   ]
 
@@ -53,7 +52,11 @@ extension WindowController: NSToolbarDelegate {
         .flexibleSpace,
         .doughnutFilter,
         .doughnutPlayerView,
+<<<<<<< HEAD
         .doughnutTaskManager,
+=======
+        .doughnutAirPlay,
+>>>>>>> 8517626 (Move download progress to bottom left.)
         .flexibleSpace,
         .doughnutSearch,
       ]
@@ -63,7 +66,11 @@ extension WindowController: NSToolbarDelegate {
         .doughnutNewPodcast,
         .flexibleSpace,
         .doughnutPlayerView,
+<<<<<<< HEAD
         .doughnutTaskManager,
+=======
+        .doughnutAirPlay,
+>>>>>>> 8517626 (Move download progress to bottom left.)
         .flexibleSpace,
         .doughnutSearch,
       ]
