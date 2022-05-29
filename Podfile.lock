@@ -3,14 +3,14 @@ PODS:
   - GRDB.swift (5.17.0):
     - GRDB.swift/standard (= 5.17.0)
   - GRDB.swift/standard (5.17.0)
-  - MASPreferences (1.3)
+  - MASPreferences (1.4.1)
   - PLCrashReporter (1.10.1)
   - Sparkle (1.27.1)
 
 DEPENDENCIES:
   - FeedKit (= 9.1.2)
   - GRDB.swift (= 5.17.0)
-  - MASPreferences (from `https://github.com/shpakovski/MASPreferences.git`, commit `135869c`)
+  - MASPreferences (from `https://github.com/shpakovski/MASPreferences.git`, tag `1.4.1`)
   - PLCrashReporter (= 1.10.1)
   - Sparkle (= 1.27.1)
 
@@ -23,21 +23,21 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   MASPreferences:
-    :commit: 135869c
     :git: https://github.com/shpakovski/MASPreferences.git
+    :tag: 1.4.1
 
 CHECKOUT OPTIONS:
   MASPreferences:
-    :commit: 135869c
     :git: https://github.com/shpakovski/MASPreferences.git
+    :tag: 1.4.1
 
 SPEC CHECKSUMS:
   FeedKit: 71653273ab08e618cd6fd1301ca08fc02dca6a9e
   GRDB.swift: 1c8a479b2723beab39ed8609fe25513483a0f282
-  MASPreferences: f5cf4c3f91714fcb4e1ce21b7002880353fe7c5e
+  MASPreferences: 1ba2deb14086792857af44d22846fc4aae477fd9
   PLCrashReporter: b30195e509f07299ea277d1997b3a39449d05698
   Sparkle: 23f98b268284c8c03e6228230fc8f1807ef041d5
 
-PODFILE CHECKSUM: eda8b35c82199a93c745135e96097d7a487d5530
+PODFILE CHECKSUM: d2401840baf627d470f626ef71b9a4f6888a28e4
 
 COCOAPODS: 1.11.3
