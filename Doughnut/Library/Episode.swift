@@ -194,7 +194,7 @@ class Episode: Record {
     if let url = url() {
       NSWorkspace.shared.recycle([url], completionHandler: { _, error in
         if let error = error {
-          print("Failed to move to trash \(error)")
+          Library.log(level: .error, "Failed to move to trash \(error)")
         } else {
           if let completion = completion {
             completion(url)
@@ -224,7 +224,7 @@ class Episode: Record {
       if copyToLibrary {
         // Perform the copy
         guard let storagePath = podcast.storagePath() else {
-          print("Could not determine podcast storage location")
+          Library.log(level: .error, "Could not determine podcast storage location")
           return
         }
 
@@ -241,7 +241,7 @@ class Episode: Record {
 
           episode.fileName = fileName
         } catch {
-          print("Failed to copy \(url.path) to library. Output destination \(outputPath)")
+          Library.log(level: .error, "Failed to copy \(url.path) to library. Output destination \(outputPath)")
           return
         }
       } else {
