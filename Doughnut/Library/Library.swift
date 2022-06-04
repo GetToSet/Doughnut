@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import AppKit
 import Foundation
 import OSLog
 
@@ -70,7 +71,6 @@ class Library: NSObject {
   let tasks = TaskQueue()
 
   var podcasts = [Podcast]()
-  let downloadManager = DownloadManager()
 
   var unplayedCount: Int {
     get {
