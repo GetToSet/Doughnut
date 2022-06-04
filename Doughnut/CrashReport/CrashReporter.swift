@@ -17,6 +17,7 @@
  */
 
 import Foundation
+import OSLog
 
 import CrashReporter
 
@@ -27,13 +28,14 @@ final class CrashReporter {
   }
 
   private static var sharedInstance = CrashReporter()
+  private static let log = OSLog.main(category: "CrashReporter")
 
   private var plCrashReporter: PLCrashReporter?
 
   private init() {
     let config = PLCrashReporterConfig.defaultConfiguration()
     guard let plCrashReporter = PLCrashReporter(configuration: config) else {
-      print("CrashReporter: could not create an instance of PLCrashReporter")
+      Self.log(level: .error, "Could not create an instance of PLCrashReporter")
       return
     }
     self.plCrashReporter = plCrashReporter
@@ -41,7 +43,7 @@ final class CrashReporter {
     do {
       try plCrashReporter.enableAndReturnError()
     } catch {
-      print("CrashReporter: failed to enable PLCrashReporter: \(error)")
+      Self.log(level: .error, "Failed to enable PLCrashReporter: \(error)")
     }
   }
 
@@ -67,10 +69,10 @@ final class CrashReporter {
       if let text = PLCrashReportTextFormatter.stringValue(for: report, with: PLCrashReportTextFormatiOS) {
         return text
       } else {
-        print("CrashReporter: can't convert the report to text")
+        Self.log(level: .error, "Failed to convert the report to text")
       }
     } catch {
-      print("CrashReporter failed to load and parse crash report: \(error)")
+      Self.log(level: .error, "Failed to load and parse crash report: \(error)")
     }
 
     return nil
