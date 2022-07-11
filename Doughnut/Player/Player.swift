@@ -74,6 +74,8 @@ final class Player: NSObject {
 
   private var periodicTimeObservers = [Any]()
 
+  private let userAgent: String = buildUserAgent()
+
   override init() {
     super.init()
     setupRemoteCommands()
@@ -102,7 +104,12 @@ final class Player: NSObject {
       guard let url = URL(string: enclosureUrl) else { return }
 
       currentPlaybackURL = url
-      avAsset = AVAsset(url: url)
+      avAsset = AVURLAsset(
+        url: url,
+        options: [
+          "AVURLAssetHTTPHeaderFieldsKey": buildAVPlayerHTTPHeaders(),
+        ]
+      )
     }
 
     currentAVAsset = avAsset
@@ -265,6 +272,25 @@ final class Player: NSObject {
   private func postPlaybackStatusUpdates() {
     delegate?.updatePlayback()
     updateNowPlayingPlaybackInfo()
+  }
+
+  private func buildAVPlayerHTTPHeaders() -> [String: String] {
+    return [
+      "User-Agent": self.userAgent,
+    ]
+  }
+
+  private static func buildUserAgent() -> String {
+    let processInfo = ProcessInfo()
+
+    var bundleVersion = ""
+    var bundleShortVersion = ""
+    if let infoDict = Bundle.main.infoDictionary {
+      bundleVersion = (infoDict["CFBundleVersion"] as? String) ?? ""
+      bundleShortVersion = (infoDict["CFBundleShortVersionString"] as? String) ?? ""
+    }
+
+    return "Doughnut/\(bundleShortVersion).\(bundleVersion) (Podcast Client; macOS \(processInfo.operatingSystemVersionString))"
   }
 
   // MARK: - Actions
