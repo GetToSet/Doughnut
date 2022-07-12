@@ -32,9 +32,9 @@ import GRDB
 protocol LibraryDelegate {
   func librarySubscribedToPodcast(subscribed: Podcast)
   func libraryUnsubscribedFromPodcast(unsubscribed: Podcast)
-  func libraryUpdatingPodcast(podcast: Podcast)
-  func libraryUpdatedPodcast(podcast: Podcast)
-  func libraryUpdatedEpisode(episode: Episode)
+  func libraryUpdatingPodcasts(podcasts: [Podcast])
+  func libraryUpdatedPodcasts(podcasts: [Podcast])
+  func libraryUpdatedEpisodes(episodes: [Episode])
   func libraryReloaded()
 }
 
@@ -391,7 +391,7 @@ class Library: NSObject {
       // Mark as loading
       podcast.loading = true
       DispatchQueue.main.async {
-        self.delegate?.libraryUpdatingPodcast(podcast: podcast)
+        self.delegate?.libraryUpdatingPodcasts(podcasts: [podcast])
       }
 
       let newEpisodes = podcast.fetch()
@@ -435,7 +435,7 @@ class Library: NSObject {
         guard error == nil else { return }
 
         DispatchQueue.main.async {
-          self.delegate?.libraryUpdatedEpisode(episode: episode)
+          self.delegate?.libraryUpdatedEpisodes(episodes: [episode])
         }
       })
     }
@@ -451,7 +451,7 @@ class Library: NSObject {
         }
 
         DispatchQueue.main.async {
-          self.delegate?.libraryUpdatedPodcast(podcast: podcast)
+          self.delegate?.libraryUpdatedPodcasts(podcasts: [podcast])
         }
       } catch let error as DatabaseError {
         Library.handleDatabaseError(error)
@@ -503,7 +503,7 @@ class Library: NSObject {
       case .success:
         completion?(.success(podcast))
         DispatchQueue.main.async {
-          self.delegate?.libraryUpdatedPodcast(podcast: podcast)
+          self.delegate?.libraryUpdatedPodcasts(podcasts: [podcast])
         }
       case let .failure(error):
         if let error = error as? DatabaseError {
