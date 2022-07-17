@@ -160,10 +160,6 @@ final class EpisodeViewController: NSViewController, NSTableViewDelegate, NSTabl
     tableView.scrollRowToVisible(tableView.selectedRow)
   }
 
-  func reload(forEpisode episode: Episode) {
-    reload(forChangedEpisodes: [episode])
-  }
-
   func reload(forChangedEpisodes changedEpisodes: [Episode]?) {
     let availableRowIndicesRange = tableView.availableRowIndicesRange
 
@@ -453,10 +449,7 @@ final class EpisodeViewController: NSViewController, NSTableViewDelegate, NSTabl
 
     let shouldMarkPlayed = !allPlayed
 
-    for episode in episodes {
-      episode.played = shouldMarkPlayed
-      Library.global.save(episode: episode)
-    }
+    Library.global.batchMarkEpisodesAsPlayed(episodes, played: shouldMarkPlayed)
   }
 
   @IBAction func toggleFavourite(_ sender: Any) {
@@ -466,10 +459,7 @@ final class EpisodeViewController: NSViewController, NSTableViewDelegate, NSTabl
 
     let shouldMarkAsFavourite = !allMarkedAsFavourite
 
-    for episode in activeEpisodesForAction() {
-      episode.favourite = shouldMarkAsFavourite
-      Library.global.save(episode: episode)
-    }
+    Library.global.batchMarkEpisodesAsFavourite(episodes, favourite: shouldMarkAsFavourite)
   }
 
   @IBAction func downloadEpisode(_ sender: Any) {
