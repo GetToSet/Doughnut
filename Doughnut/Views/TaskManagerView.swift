@@ -18,15 +18,17 @@
 
 import Cocoa
 
-class TaskManagerView: NSView, TaskQueueViewDelegate {
-  let activitySpinner = ActivityIndicator()
+final class TaskManagerView: NSView, TaskQueueViewDelegate {
+
+  @IBOutlet weak var progressIndicator: NSProgressIndicator!
+
   let popover = NSPopover()
 
   var tasksViewController: TasksViewController?
 
   var hasActiveTasks: Bool = false {
     didSet {
-      activitySpinner.isHidden = !hasActiveTasks
+      isHidden = !hasActiveTasks
     }
   }
 
@@ -37,9 +39,7 @@ class TaskManagerView: NSView, TaskQueueViewDelegate {
 
     popover.behavior = .transient
 
-    activitySpinner.frame = self.bounds
-    activitySpinner.isHidden = true
-    addSubview(activitySpinner)
+    isHidden = true
 
     let storyboard = NSStoryboard(name: "Main", bundle: nil)
     tasksViewController = (storyboard.instantiateController(withIdentifier: "TasksPopover") as! TasksViewController)
@@ -47,9 +47,15 @@ class TaskManagerView: NSView, TaskQueueViewDelegate {
     popover.contentViewController = tasksViewController
   }
 
-  override func mouseDown(with event: NSEvent) {
+  override func viewDidMoveToWindow() {
+    super.viewDidMoveToWindow()
+    progressIndicator.startAnimation(self)
+  }
+
+  @IBAction func moreButtonClicked(_ sender: Any?) {
     if hasActiveTasks {
-      popover.show(relativeTo: bounds, of: activitySpinner, preferredEdge: .minY)
+      let targetView = (sender as? NSView) ?? self
+      popover.show(relativeTo: bounds, of: targetView, preferredEdge: .maxX)
     }
   }
 
@@ -72,4 +78,5 @@ class TaskManagerView: NSView, TaskQueueViewDelegate {
       }
     }
   }
+
 }
