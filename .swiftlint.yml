@@ -12,6 +12,7 @@ only_rules:
   # - force_unwrapping
   # - implicitly_unwrapped_optional
   - generic_type_name
+  - implicit_getter
   - legacy_cggeometry_functions
   - legacy_constant
   - legacy_constructor

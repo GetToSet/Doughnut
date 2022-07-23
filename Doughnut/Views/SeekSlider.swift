@@ -20,9 +20,7 @@ import Cocoa
 
 class SeekSlider: NSSlider {
   override var knobThickness: CGFloat {
-    get {
-      return 3.0
-    }
+    return 3.0
   }
 
   var streamedValue: Double = 0 {
@@ -54,22 +52,18 @@ class SeekSliderCell: NSSliderCell {
   }
 
   var percentage: CGFloat {
-    get {
-      if (self.maxValue - self.minValue) > 0 {
-        return CGFloat((self.doubleValue - self.minValue) / (self.maxValue - self.minValue))
-      } else {
-        return 0
-      }
+    if (self.maxValue - self.minValue) > 0 {
+      return CGFloat((self.doubleValue - self.minValue) / (self.maxValue - self.minValue))
+    } else {
+      return 0
     }
   }
 
   var streamedPercentage: CGFloat {
-    get {
-      if (self.maxValue - self.minValue) > 0 {
-        return CGFloat((self.streamed - self.minValue) / (self.maxValue - self.minValue))
-      } else {
-        return 0
-      }
+    if (self.maxValue - self.minValue) > 0 {
+      return CGFloat((self.streamed - self.minValue) / (self.maxValue - self.minValue))
+    } else {
+      return 0
     }
   }
 
