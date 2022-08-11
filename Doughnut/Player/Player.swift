@@ -31,6 +31,12 @@ enum PlayerLoadStatus {
   case loading
 }
 
+extension Notification.Name {
+
+  static let playerChanged = Notification.Name(rawValue: "PlayerChaned")
+
+}
+
 final class Player: NSObject {
   static var global = Player()
 
@@ -39,7 +45,15 @@ final class Player: NSObject {
   weak var delegate: PlayerDelegate?
 
   private(set) var loadStatus: PlayerLoadStatus = .none
-  private(set) var avPlayer: AVPlayer?
+  private(set) var avPlayer: AVPlayer? {
+    didSet {
+      if let avPlayer = avPlayer {
+        NotificationCenter.default.post(name: Notification.Name.playerChanged, object: self, userInfo: [
+          "avPlayer": avPlayer,
+        ])
+      }
+    }
+  }
   private(set) var currentEpisode: Episode?
   private(set) var currentAVAsset: AVAsset?
   private(set) var currentPlaybackURL: URL?

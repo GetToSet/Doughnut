@@ -17,13 +17,22 @@
  */
 
 import AppKit
+import AVKit
 
 import SimplyCoreAudio
+
+final class RoutePickerView: AVRoutePickerView {
+
+  override var intrinsicContentSize: NSSize {
+    return CGSize(width: 32, height: 32)
+  }
+
+}
 
 final class AudioRouteToolBarItem: NSToolbarItem, NSPopoverDelegate {
 
   enum Mode {
-    case connectedDevice
+    case audioDevice
     case airPlay
   }
 
@@ -31,9 +40,33 @@ final class AudioRouteToolBarItem: NSToolbarItem, NSPopoverDelegate {
 
   private let simplyCoreAudio = SimplyCoreAudio()
 
+  private var audioDeviceButton: NSButton!
+  private var routePickerView: RoutePickerView!
+
+  private var mode: Mode = .airPlay {
+    didSet {
+      updateButtonForMode()
+    }
+  }
+
   init() {
     super.init(itemIdentifier: NSToolbarItem.Identifier.doughnutAirPlay)
 
+    NotificationCenter.default.addObserver(self, selector: #selector(playerChanged(_:)), name: .playerChanged, object: nil)
+
+    initAudioDeviceButton()
+    initRoutePickerView()
+
+    updateButtonForMode()
+  }
+
+  @objc func playerChanged(_ notification: Notification) {
+    if case .airPlay = mode, let player = notification.userInfo?["avPlayer"] as? AVPlayer {
+      routePickerView.player = player
+    }
+  }
+
+  private func initAudioDeviceButton() {
     let image: NSImage!
 
     if #available(macOS 11.0, *) {
@@ -55,8 +88,26 @@ final class AudioRouteToolBarItem: NSToolbarItem, NSPopoverDelegate {
     button.stringValue = ""
     button.bezelStyle = .texturedRounded
     button.contentTintColor = .controlTextColor
+  }
 
-    view = button
+  private func initRoutePickerView() {
+    routePickerView = RoutePickerView(frame: .zero)
+    routePickerView.setRoutePickerButtonColor(.controlAccentColor, for: .active)
+    for view in routePickerView.subviews {
+      if let button = view as? NSButton {
+        button.bezelStyle = .texturedRounded
+      }
+    }
+  }
+
+  private func updateButtonForMode() {
+    switch mode {
+    case .audioDevice:
+      view = audioDeviceButton
+      routePickerView.player = nil
+    case .airPlay:
+      view = routePickerView
+    }
   }
 
   @objc func toolbarItemAction(_ sender: Any?) {
