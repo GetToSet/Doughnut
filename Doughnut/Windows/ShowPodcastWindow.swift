@@ -199,11 +199,9 @@ class ShowPodcastViewController: NSViewController {
 
       if Self.validate(forPodcast: podcast) {
         Library.global.update(podcast: podcast) { [weak self] _ in
-          DispatchQueue.main.async {
-            // TODO: prompt for error on failure
-            NSApp.stopModal(withCode: .OK)
-            self?.view.window?.close()
-          }
+          // TODO: prompt for error on failure
+          NSApp.stopModal(withCode: .OK)
+          self?.view.window?.close()
         }
       }
     } else {

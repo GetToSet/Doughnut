@@ -259,10 +259,8 @@ class Library: NSObject {
           // Don't notify newly detected episodes for a new subscription, maybe change in future?
           // self.detectedNewEpisodes(podcast: podcast, episodes: podcast.episodes)
 
-          DispatchQueue.main.async {
-            self.podcasts.append(podcast)
-            self.delegate?.librarySubscribedToPodcast(subscribed: podcast)
-          }
+          self.podcasts.append(podcast)
+          self.delegate?.librarySubscribedToPodcast(subscribed: podcast)
         }
       }
     }
@@ -289,10 +287,8 @@ class Library: NSObject {
       self.insert(podcast: podcast, completion: { result in
         guard case .success = result else { return }
 
-        DispatchQueue.main.async {
-          self.podcasts.append(podcast)
-          self.delegate?.librarySubscribedToPodcast(subscribed: podcast)
-        }
+        self.podcasts.append(podcast)
+        self.delegate?.librarySubscribedToPodcast(subscribed: podcast)
       })
     }
   }
@@ -397,10 +393,8 @@ class Library: NSObject {
 
       self.update(podcast: podcast) { [weak self] result in
         // TODO: error handling
-        if case .success = result, newEpisodes.count > 0{
-          DispatchQueue.main.async {
-            self?.detectedNewEpisodes(podcast: podcast, episodes: newEpisodes)
-          }
+        if case .success = result, newEpisodes.count > 0 {
+          self?.detectedNewEpisodes(podcast: podcast, episodes: newEpisodes)
         }
       }
     }
@@ -471,16 +465,20 @@ class Library: NSObject {
     }, completion: { _, result in
       switch result {
       case .success:
-        completion?(.success(episode))
         DispatchQueue.main.async {
-          self.delegate?.libraryUpdatedEpisodes(episodes: [episode])
+          completion?(.success(episode))
+          self.delegate?.libraryUpdatedEpisodes(episode: [episode])
         }
       case let .failure(error):
         if let error = error as? DatabaseError {
           Library.handleDatabaseError(error)
-          completion?(.failure(.databaseError(error)))
+          DispatchQueue.main.async {
+            completion?(.failure(.databaseError(error)))
+          }
         } else {
-          completion?(.failure(.unknown(error)))
+          DispatchQueue.main.async {
+            completion?(.failure(.unknown(error)))
+          }
         }
       }
     })
@@ -494,16 +492,20 @@ class Library: NSObject {
     }, completion: { _, result in
       switch result {
       case .success:
-        completion?(.success(episode))
         DispatchQueue.main.async {
-          self.delegate?.libraryUpdatedPodcasts(podcasts: [podcast])
+          completion?(.success(episode))
+          self.delegate?.libraryUpdatedPodcasts(podcast: [podcast])
         }
       case let .failure(error):
         if let error = error as? DatabaseError {
           Library.handleDatabaseError(error)
-          completion?(.failure(.databaseError(error)))
+          DispatchQueue.main.async {
+            completion?(.failure(.databaseError(error)))
+          }
         } else {
-          completion?(.failure(.unknown(error)))
+          DispatchQueue.main.async {
+            completion?(.failure(.unknown(error)))
+          }
         }
       }
     })
@@ -524,13 +526,19 @@ class Library: NSObject {
     }, completion: { _, result in
       switch result {
       case .success:
-        completion?(.success(podcast))
+        DispatchQueue.main.async {
+          completion?(.success(podcast))
+        }
       case let .failure(error):
         if let error = error as? DatabaseError {
           Library.handleDatabaseError(error)
-          completion?(.failure(.databaseError(error)))
+          DispatchQueue.main.async {
+            completion?(.failure(.databaseError(error)))
+          }
         } else {
-          completion?(.failure(.unknown(error)))
+          DispatchQueue.main.async {
+            completion?(.failure(.unknown(error)))
+          }
         }
       }
     })
@@ -551,16 +559,20 @@ class Library: NSObject {
     }, completion: { _, result in
       switch result {
       case .success:
-        completion?(.success(podcast))
         DispatchQueue.main.async {
+          completion?(.success(podcast))
           self.delegate?.libraryUpdatedPodcasts(podcasts: [podcast])
         }
       case let .failure(error):
         if let error = error as? DatabaseError {
           Library.handleDatabaseError(error)
-          completion?(.failure(.databaseError(error)))
+          DispatchQueue.main.async {
+            completion?(.failure(.databaseError(error)))
+          }
         } else {
-          completion?(.failure(.unknown(error)))
+          DispatchQueue.main.async {
+            completion?(.failure(.unknown(error)))
+          }
         }
       }
     })

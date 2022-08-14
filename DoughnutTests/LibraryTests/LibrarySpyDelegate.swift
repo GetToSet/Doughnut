@@ -24,18 +24,20 @@ class LibrarySpyDelegate: LibraryDelegate {
   var subscribedToPodcastExpectation: XCTestExpectation?
   var subscribedToPodcastResult: Podcast?
   func librarySubscribedToPodcast(subscribed: Podcast) {
+    XCTAssert(Thread.isMainThread)
     guard let expectation = subscribedToPodcastExpectation else { return }
     self.subscribedToPodcastResult = subscribed
     expectation.fulfill()
   }
 
   func libraryReloaded() {
-
+    XCTAssert(Thread.isMainThread)
   }
 
   var updatedPodcastExpectation: XCTestExpectation?
   var updatedPodcastResults = [Podcast]()
   func libraryUpdatedPodcasts(podcasts: [Podcast]) {
+    XCTAssert(Thread.isMainThread)
     guard let expectation = updatedPodcastExpectation else { return }
     updatedPodcastResults = podcasts
     expectation.fulfill()
@@ -44,6 +46,7 @@ class LibrarySpyDelegate: LibraryDelegate {
   var updatedEpisodeExpectation: XCTestExpectation?
   var updatedEpisodeResults = [Episode]()
   func libraryUpdatedEpisodes(episodes: [Episode]) {
+    XCTAssert(Thread.isMainThread)
     guard let expectation = updatedEpisodeExpectation else { return }
     updatedEpisodeResults = episodes
     expectation.fulfill()
@@ -52,12 +55,13 @@ class LibrarySpyDelegate: LibraryDelegate {
   var unsubscribedPodcastExpectation: XCTestExpectation?
   var unsubscribedPodcastResult: Podcast?
   func libraryUnsubscribedFromPodcast(unsubscribed: Podcast) {
+    XCTAssert(Thread.isMainThread)
     guard let expectation = unsubscribedPodcastExpectation else { return }
     unsubscribedPodcastResult = unsubscribed
     expectation.fulfill()
   }
 
   func libraryUpdatingPodcasts(podcasts: [Podcast]) {
-
+    XCTAssert(Thread.isMainThread)
   }
 }
