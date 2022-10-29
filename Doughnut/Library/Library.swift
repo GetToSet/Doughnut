@@ -73,10 +73,8 @@ class Library: NSObject {
   var podcasts = [Podcast]()
 
   var unplayedCount: Int {
-    get {
-      return podcasts.reduce(0) {
-        $0 + $1.unplayedCount
-      }
+    return podcasts.reduce(0) {
+      $0 + $1.unplayedCount
     }
   }
 
