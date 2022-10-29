@@ -31,6 +31,12 @@ enum PlayerLoadStatus {
   case loading
 }
 
+extension Notification.Name {
+
+  static let playerChanged = Notification.Name(rawValue: "PlayerChaned")
+
+}
+
 final class Player: NSObject {
   static var global = Player()
 
@@ -39,7 +45,15 @@ final class Player: NSObject {
   weak var delegate: PlayerDelegate?
 
   private(set) var loadStatus: PlayerLoadStatus = .none
-  private(set) var avPlayer: AVPlayer?
+  private(set) var avPlayer: AVPlayer? {
+    didSet {
+      if let avPlayer = avPlayer {
+        NotificationCenter.default.post(name: Notification.Name.playerChanged, object: self, userInfo: [
+          "avPlayer": avPlayer,
+        ])
+      }
+    }
+  }
   private(set) var currentEpisode: Episode?
   private(set) var currentAVAsset: AVAsset?
   private(set) var currentPlaybackURL: URL?
@@ -411,73 +425,4 @@ final class Player: NSObject {
     }
   }
 
-  // MARK: -
-
-  static func audioOutputDevices() throws -> [AudioDeviceID] {
-    var inputDevices: [AudioDeviceID] = []
-
-    // Construct the address of the property which holds all available devices
-    var devicesPropertyAddress = AudioObjectPropertyAddress(mSelector: kAudioHardwarePropertyDevices, mScope: kAudioObjectPropertyScopeGlobal, mElement: kAudioObjectPropertyElementMaster)
-    var propertySize = UInt32(0)
-
-    try handleCoreAudio(AudioObjectGetPropertyDataSize(AudioObjectID(kAudioObjectSystemObject), &devicesPropertyAddress, 0, nil, &propertySize))
-
-    // Get the number of devices by dividing the property address by the size of AudioDeviceIDs
-    let numberOfDevices = Int(propertySize) / MemoryLayout<AudioDeviceID>.size
-
-    // Create space to store the values
-    var deviceIDs: [AudioDeviceID] = []
-    for _ in 0 ..< numberOfDevices {
-      deviceIDs.append(AudioDeviceID())
-    }
-
-    // Get the available devices
-    try handleCoreAudio(AudioObjectGetPropertyData(AudioObjectID(kAudioObjectSystemObject), &devicesPropertyAddress, 0, nil, &propertySize, &deviceIDs))
-
-    // Iterate
-    for id in deviceIDs {
-
-      // Get the device name for fun
-      var name: CFString = "" as CFString
-      var propertySize = UInt32(MemoryLayout<CFString>.size)
-      var deviceNamePropertyAddress = AudioObjectPropertyAddress(mSelector: kAudioDevicePropertyDeviceNameCFString, mScope: kAudioObjectPropertyScopeGlobal, mElement: kAudioObjectPropertyElementMaster)
-      try handleCoreAudio(AudioObjectGetPropertyData(id, &deviceNamePropertyAddress, 0, nil, &propertySize, &name))
-
-      // Check the input scope of the device for any channels. That would mean it's an input device
-
-      // Get the stream configuration of the device. It's a list of audio buffers.
-      var streamConfigAddress = AudioObjectPropertyAddress(mSelector: kAudioDevicePropertyStreamConfiguration, mScope: kAudioDevicePropertyScopeInput, mElement: 0)
-
-      // Get the size so we can make room again
-      try handleCoreAudio(AudioObjectGetPropertyDataSize(id, &streamConfigAddress, 0, nil, &propertySize))
-
-      // Create a buffer list with the property size we just got and let core audio fill it
-      let audioBufferList = AudioBufferList.allocate(maximumBuffers: Int(propertySize))
-      try handleCoreAudio(AudioObjectGetPropertyData(id, &streamConfigAddress, 0, nil, &propertySize, audioBufferList.unsafeMutablePointer))
-
-      // Get the number of channels in all the audio buffers in the audio buffer list
-      var channelCount = 0
-      for i in 0 ..< Int(audioBufferList.unsafeMutablePointer.pointee.mNumberBuffers) {
-        channelCount = channelCount + Int(audioBufferList[i].mNumberChannels)
-      }
-
-      free(audioBufferList.unsafeMutablePointer)
-
-      // If there are channels, it's an input device
-
-      // swiftlint:disable:next no_direct_standard_out_logs
-      Swift.print("Found output device '\(name)' with \(channelCount) channels [\(id)]")
-      inputDevices.append(id)
-    }
-
-    return inputDevices
-  }
-
-  static func handleCoreAudio(_ errorCode: OSStatus) throws {
-    if errorCode != kAudioHardwareNoError {
-      let error = NSError(domain: NSOSStatusErrorDomain, code: Int(errorCode), userInfo: [NSLocalizedDescriptionKey: "CAError: \(errorCode)" ])
-      NSApplication.shared.presentError(error)
-      throw error
-    }
-  }
 }
